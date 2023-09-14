@@ -13,6 +13,7 @@ def schedules_list(request):
         objects = get_list_or_404(Scheduling, is_canceled=False)
         serializer = SchedulingSerializer(objects, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
     if request.method == "POST":
         body_request = request.data
         serializer = SchedulingSerializer(data=body_request)
@@ -22,6 +23,33 @@ def schedules_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# @api_view(http_method_names=["GET", "PUT", "PATCH", "DELETE"])
-# def scheduling(request):
-#     ...
+@api_view(http_method_names=["GET", "PUT", "PATCH", "DELETE"])
+def scheduling(request, id):
+    object = get_object_or_404(Scheduling, id=id)
+
+    if request.method == "GET":
+        serializer = SchedulingSerializer(object)
+        return Response(serializer.data)
+
+    if request.method == "PUT":
+        body_request = request.data
+        serializer = SchedulingSerializer(object, data=body_request)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == "PATCH":
+        body_request = request.data
+        serializer = SchedulingSerializer(
+            object, data=body_request, partial=True
+        )  # noqa 501
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == "DELETE":
+        object.is_canceled = True
+        object.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
