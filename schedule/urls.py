@@ -5,6 +5,11 @@ from schedule import views
 app_name = "schedule"
 
 urlpatterns = [
-    path("schedules/", views.schedules_list, name="schedules"),
-    path("schedules/<int:id>/", views.scheduling, name="scheduling"),
+    path("schedules/", views.Schedules.as_view(), name="schedules"),
+    path(
+        "schedules/<int:id>/",
+        views.SchedulingDetail.as_view(),
+        name="scheduling",
+    ),
+    path("workers/", views.Workers.as_view(), name="workers"),
 ]
